@@ -1,0 +1,10 @@
+artifact_location: file:///C:/Users/илья/Desktop/pet_projects/red-wine-quality-prediction/src/mlflow/mlruns/115908446369038859/models/m-8ed0a4640b21469babac85ee2224807e/artifacts
+creation_timestamp: 1766679190678
+experiment_id: '115908446369038859'
+last_updated_timestamp: 1766679194488
+model_id: m-8ed0a4640b21469babac85ee2224807e
+model_type: null
+name: GradientBoosting
+source_run_id: 1ae83441c32846f5b93a9fba6ad1312d
+status: 2
+status_message: null

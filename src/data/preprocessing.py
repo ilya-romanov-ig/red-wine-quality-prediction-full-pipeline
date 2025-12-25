@@ -4,9 +4,6 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
 import os
-import sys
-
-sys.path.append('..')
 
 class DataPreprocessor:
     def __init__(self):
@@ -64,17 +61,18 @@ class DataPreprocessor:
             stratify=y
         )
         
-        os.makedirs('../../data/processed', exist_ok=True)
+        os.makedirs(f'{self.save_path}', exist_ok=True)
         
         train_df = pd.concat([self.X_train, self.y_train], axis=1)
         test_df = pd.concat([self.X_test, self.y_test], axis=1)
         
-        train_df.to_csv('../../data/processed/train.csv', index=False)
-        test_df.to_csv('../../data/processed/test.csv', index=False)
+        train_df.to_csv(f'{self.save_path}/train.csv', index=False)
+        test_df.to_csv(f'{self.save_path}/test.csv', index=False)
         
         return self
     
-    def fit_transform(self, X=None, y=None):
+    def fit_transform(self, X=None, y=None, save_path='../data/processed/'):
+        self.save_path = save_path
         if X is not None and y is not None:
             if isinstance(X, pd.DataFrame) and isinstance(y, (pd.Series, pd.DataFrame)):
                 self.data = pd.concat([X, y], axis=1)

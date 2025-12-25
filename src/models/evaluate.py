@@ -40,9 +40,7 @@ class ModelEvaluator:
 
     def evaluate_classification(self, model, X_test, y_test, 
                                 run_name=None, tags=None,
-                                average='weighted', save_results=False,
-                                plot_confusion_matrix=False,
-                                plot_roc_curve=False):
+                                average='weighted', save_results=False):
         if self.use_mlflow:
             import mlflow
             if run_name is None:
@@ -70,9 +68,7 @@ class ModelEvaluator:
                 try:
                     y_pred_proba = model.predict_proba(X_test)[:, 1]
                     metrics['roc_auc'] = roc_auc_score(y_test, y_pred_proba)
-                    
-                    # if plot_roc_curve:
-                    #     self._log_roc_curve(y_test, y_pred_proba)
+
                 except:
                     pass
             
@@ -84,9 +80,6 @@ class ModelEvaluator:
                     if isinstance(value, (int, float)):
                         mlflow.log_metric(key, value)
                 
-                # if plot_confusion_matrix:
-                #     self._log_confusion_matrix(cm, y_test)
-            
             self._extract_feature_importance(model)
             
             if save_results:
@@ -100,7 +93,7 @@ class ModelEvaluator:
     
     def evaluate_regression(self, model, X_test, y_test, 
                            run_name=None, tags=None,
-                           save_results=False, plot_residuals=False):
+                           save_results=False):
         if self.use_mlflow:
             import mlflow
             mlflow.start_run(run_name=run_name or f"eval_reg_{type(model).__name__}", tags=tags)
@@ -122,9 +115,6 @@ class ModelEvaluator:
                     if key != 'predictions' and isinstance(value, (int, float)):
                         mlflow.log_metric(key, value)
                 
-                # if plot_residuals:
-                #     self._log_residual_plot(y_test, y_pred)
-            
             if save_results:
                 self.metrics_history.append(metrics)
             
@@ -133,96 +123,3 @@ class ModelEvaluator:
         finally:
             if self.use_mlflow:
                 mlflow.end_run()
-    
-    # def _log_confusion_matrix(self, cm, y_true):
-
-    #     import matplotlib
-    #     matplotlib.use('Agg')
-    #     import matplotlib.pyplot as plt
-    #     import seaborn as sns
-    #     import tempfile
-    #     import mlflow
-        
-    #     plt.figure(figsize=(10, 8))
-    #     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
-    #     plt.title('Confusion Matrix')
-    #     plt.ylabel('True Label')
-    #     plt.xlabel('Predicted Label')
-        
-    #     with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp_file:
-    #         tmp_path = tmp_file.name
-    #         plt.savefig(tmp_path, format='png', dpi=150, bbox_inches='tight')
-    #         plt.close()
-            
-    #         try:
-    #             mlflow.log_artifact(tmp_path, "confusion_matrix")
-    #         finally:
-    #             os.unlink(tmp_path)
-    
-    # def _log_roc_curve(self, y_true, y_pred_proba):
-    #     from sklearn.metrics import roc_curve, auc
-    #     import matplotlib
-    #     matplotlib.use('Agg')
-    #     import matplotlib.pyplot as plt
-    #     import tempfile
-    #     import mlflow
-        
-    #     fpr, tpr, _ = roc_curve(y_true, y_pred_proba)
-    #     roc_auc = auc(fpr, tpr)
-        
-    #     plt.figure(figsize=(10, 8))
-    #     plt.plot(fpr, tpr, color='darkorange', lw=2, 
-    #             label=f'ROC curve (area = {roc_auc:.2f})')
-    #     plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-    #     plt.xlim([0.0, 1.0])
-    #     plt.ylim([0.0, 1.05])
-    #     plt.xlabel('False Positive Rate')
-    #     plt.ylabel('True Positive Rate')
-    #     plt.title('Receiver Operating Characteristic (ROC) Curve')
-    #     plt.legend(loc="lower right")
-        
-    #     with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp_file:
-    #         tmp_path = tmp_file.name
-    #         plt.savefig(tmp_path, format='png', dpi=150, bbox_inches='tight')
-    #         plt.close()
-            
-    #         try:
-    #             mlflow.log_artifact(tmp_path, "roc_curve")
-    #         finally:
-    #             os.unlink(tmp_path)
-    
-    # def _log_residual_plot(self, y_true, y_pred):
-    #     import matplotlib
-    #     matplotlib.use('Agg')
-    #     import matplotlib.pyplot as plt
-    #     import tempfile
-    #     import mlflow
-        
-    #     residuals = y_true - y_pred
-        
-    #     plt.figure(figsize=(12, 5))
-        
-    #     plt.subplot(1, 2, 1)
-    #     plt.scatter(y_pred, residuals, alpha=0.5)
-    #     plt.axhline(y=0, color='r', linestyle='--')
-    #     plt.xlabel('Predicted Values')
-    #     plt.ylabel('Residuals')
-    #     plt.title('Residuals vs Predicted')
-        
-    #     plt.subplot(1, 2, 2)
-    #     plt.hist(residuals, bins=30, edgecolor='black')
-    #     plt.xlabel('Residuals')
-    #     plt.ylabel('Frequency')
-    #     plt.title('Residuals Distribution')
-        
-    #     plt.tight_layout()
-        
-    #     with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp_file:
-    #         tmp_path = tmp_file.name
-    #         plt.savefig(tmp_path, format='png', dpi=150, bbox_inches='tight')
-    #         plt.close()
-            
-    #         try:
-    #             mlflow.log_artifact(tmp_path, "residual_analysis")
-    #         finally:
-    #             os.unlink(tmp_path)
