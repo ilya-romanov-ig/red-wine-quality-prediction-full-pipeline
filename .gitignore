@@ -1,5 +1,5 @@
 __pycache__
 
-./src/mlflow/mlruns
+./src/mlflow/mlruns/*
 
 ./saved-models
