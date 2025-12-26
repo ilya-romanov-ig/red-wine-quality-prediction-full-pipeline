@@ -91,10 +91,10 @@ class MLflowManager:
     def _check_connection(self):
         try:
             experiments = mlflow.search_experiments()
-            print(f"✅ MLflow connection successful. Found {len(experiments)} experiments.")
+            print(f"MLflow connection successful. Found {len(experiments)} experiments.")
             return True
         except Exception as e:
-            print(f"⚠️  MLflow connection warning: {e}")
+            print(f"MLflow connection warning: {e}")
             print("MLflow will work in local mode.")
             return False
 
