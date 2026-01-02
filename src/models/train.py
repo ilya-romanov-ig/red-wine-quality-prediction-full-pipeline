@@ -1,24 +1,23 @@
 import joblib
 
-def train(estimator, X, y, params=None, random_state=42):
+def train_model(estimator, X, y, params=None, random_state=42, fit=True):
     """
-    Final model training
+    Model train method
     
     :param estimator: Baseline estimator
     :param X: Train data
     :param y: Train target
     :param params: Model params
     :param random_state: random_state
+    :param fit: Use fit method for model
     """
-    if params is None:
-        params = {}
+    params = params or {}
 
-    try:
-        model = estimator(**params, random_state=random_state)
+    model = estimator(**params, random_state=random_state)
+
+    if fit:
         model.fit(X, y)
-        return model
-    except Exception as e:
-        return f'Error! {e}'
+    return model
 
 def save_model(model, path):
     joblib.dump(model, path)
