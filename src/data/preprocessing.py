@@ -1,9 +1,10 @@
 import joblib
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
 import os
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from data_loader import load_data
 
 class DataPreprocessor:
     def __init__(self):
@@ -13,8 +14,8 @@ class DataPreprocessor:
         self.y_train = None
         self.y_test = None
         
-    def _load_data(self, path='../../data/raw/winequality-red.csv'):
-        self.data = pd.read_csv(path, sep=';')
+    def _load_data(self, path='data/raw/winequality-red.csv'):
+        self.data = load_data(path)
         return self
     
     def _clean_data(self):
@@ -71,9 +72,12 @@ class DataPreprocessor:
         
         return self
     
-    def fit_transform(self, X=None, y=None, save_path='../data/processed/'):
+    def fit_transform(self, data=None, X=None, y=None, save_path='data/processed/'):
         self.save_path = save_path
-        if X is not None and y is not None:
+        if data is not None:
+            if isinstance(data, pd.DataFrame):
+                self.data = data
+        elif X is not None and y is not None:
             if isinstance(X, pd.DataFrame) and isinstance(y, (pd.Series, pd.DataFrame)):
                 self.data = pd.concat([X, y], axis=1)
                 if y.name:
@@ -90,7 +94,7 @@ class DataPreprocessor:
         
         return self.X_train, self.X_test, self.y_train, self.y_test
     
-    def save_scaler(self, path='../../models/scaler.pkl'):
+    def save_scaler(self, path='models/scaler.pkl'):
         os.makedirs(os.path.dirname(path), exist_ok=True)
         joblib.dump(self.scaler, path)
     

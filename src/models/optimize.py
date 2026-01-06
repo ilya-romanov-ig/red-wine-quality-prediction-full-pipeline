@@ -28,16 +28,13 @@ def objective(trial, X, y):
 
     return score
 
-def optimize(X, y, params_path='models/best_params.json'):
+def optimize(X, y, save_path='models/best_params.json'):
     sampler = optuna.samplers.TPESampler(n_startup_trials=10)
     study = optuna.create_study(direction='maximize', sampler=sampler)
     
     study.optimize(lambda t: objective(t, X, y), n_trials=100)
 
-    with open(params_path, 'w') as f:
+    with open(save_path, 'w') as f:
         json.dump(study.best_params, f, indent=4)
     
     return study.best_params
-
-
-
